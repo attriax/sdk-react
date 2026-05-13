@@ -1,0 +1,71 @@
+{
+  "name": "@attriax/react",
+  "version": "0.1.0",
+  "description": "React provider and hooks for the Attriax JavaScript SDK.",
+  "license": "Apache-2.0",
+  "homepage": "https://attriax.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/attriax/sdk-react.git"
+  },
+  "bugs": {
+    "url": "https://github.com/attriax/sdk-react/issues"
+  },
+  "author": "Attriax",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "attriax",
+    "react",
+    "attribution",
+    "deep-linking",
+    "analytics",
+    "sdk"
+  ],
+  "scripts": {
+    "build": "tsup && node ./scripts/ensure-use-client.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "@attriax/js": "0.1.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "jsdom": "^26.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.4"
+  }
+}

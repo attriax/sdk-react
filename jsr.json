@@ -1,0 +1,15 @@
+{
+  "name": "@attriax/react",
+  "version": "0.1.0",
+  "exports": "./src/index.ts",
+  "imports": {
+    "@attriax/js": "jsr:@attriax/js",
+    "react": "npm:react",
+    "react-dom": "npm:react-dom"
+  },
+  "exclude": [
+    "dist/**",
+    "test/**",
+    "node_modules/**"
+  ]
+}
