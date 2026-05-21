@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
   Attriax,
+  AttriaxGdprConsentState,
   AttriaxProvider,
   useAttriax,
   useAttriaxPageView,
@@ -28,6 +29,10 @@ describe('@attriax/react', () => {
       clientRuntime: 'react',
       retained: 'yes',
     });
+  });
+
+  it('re-exports GDPR consent state values from the browser SDK', () => {
+    expect(AttriaxGdprConsentState.NotRequired).toBe('not_required');
   });
 
   it('provides the client instance and tracks page views from the hook', async () => {

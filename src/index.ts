@@ -1,6 +1,5 @@
 import {
   Attriax as BaseAttriax,
-  AttriaxApiError,
   AttriaxSynchronizationState,
 } from '@attriax/js';
 import type {
@@ -10,6 +9,7 @@ import type {
   AttriaxCreateDynamicLinkResult,
   AttriaxDeepLinkEvent,
   AttriaxDynamicLinkRecord,
+  AttriaxGdprConsentValues,
   AttriaxInitOptions,
   AttriaxPageViewOptions,
   AttriaxRecordAdEventOptions,
@@ -28,6 +28,9 @@ import {
 
 export {
   AttriaxApiError,
+  AttriaxConsent,
+  AttriaxGdprConsent,
+  AttriaxGdprConsentState,
   AttriaxSynchronizationState,
 } from '@attriax/js';
 export type {
@@ -37,6 +40,7 @@ export type {
   AttriaxCreateDynamicLinkResult,
   AttriaxDeepLinkEvent,
   AttriaxDynamicLinkRecord,
+  AttriaxGdprConsentValues,
   AttriaxInitOptions,
   AttriaxPageViewOptions,
   AttriaxRecordAdEventOptions,

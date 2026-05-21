@@ -75,6 +75,8 @@ export function App() {
     <AttriaxProvider
       config={{
         appToken: 'ax_your_app_token',
+        gdprEnabled: true,
+        gdprAutoDetect: true,
       }}
     >
       <CheckoutPage />
@@ -120,6 +122,43 @@ function CheckoutPage() {
   return null;
 }
 ```
+
+## GDPR Consent
+
+`gdprEnabled` defaults to `false`. Turn it on only when the underlying browser
+runtime should wait for a GDPR decision before sending GDPR-gated tracking
+activity. `gdprAutoDetect` defaults to `true` and lets the SDK derive an
+initial GDPR state automatically.
+
+```tsx
+import { AttriaxGdprConsentState, useAttriax } from '@attriax/react';
+
+function PrivacyButton() {
+  const { attriax } = useAttriax();
+
+  async function handleClick() {
+    const needsConsent = await attriax.consent.gdpr.needsConsent({
+      localOnly: true,
+    });
+    if (!needsConsent) {
+      attriax.consent.gdpr.setNotRequired();
+      return;
+    }
+
+    attriax.consent.gdpr.setConsent({
+      analytics: true,
+      attribution: true,
+      adEvents: false,
+    });
+
+    console.log(attriax.consent.gdpr.state === AttriaxGdprConsentState.Granted);
+  }
+
+  return <button onClick={() => void handleClick()}>Review privacy choices</button>;
+}
+```
+
+See [docs/gdpr-and-anonymous-analytics.md](docs/gdpr-and-anonymous-analytics.md) for the full GDPR and anonymous analytics behavior inherited from `@attriax/js`, including how pending consent defers network dispatch, how `AttriaxGdprConsentState.NotRequired` maps to the `not_required` wire value, and how denied analytics is stored without device identity.
 
 ## Included APIs
 
