@@ -17,11 +17,11 @@ Use `state`, `values`, and `isWaitingForConsent` to drive privacy UI. Use `needs
 
 ## Pending Consent
 
-When GDPR is enabled and the state is `unknown` or `pending`, the SDK may queue local event, crash, session, and deep-link activity, but it does not send network tracking requests. Network dispatch resumes only after consent is resolved to `granted` or `not_required`.
+When GDPR is enabled and the state is `unknown` or `pending`, the SDK still sends anonymous-capable event, crash, session, and deep-link activity immediately, but it does so without Attriax device identity.
 
-If work was buffered while GDPR was pending and the final state is `AttriaxGdprConsentState.NotRequired`, analytics-capable requests regain normal device identity before dispatch because consent is not required for that region/session.
+Consent-only runtime persistence still applies while consent is unresolved. Attribution-only activity, user identity updates, uninstall tokens, and app-open attribution are not sent until consent resolves to `granted` or `not_required` with attribution allowed.
 
-Attribution-only activity, user identity updates, uninstall tokens, and app-open attribution are not sent while consent is waiting.
+If consent later resolves to `AttriaxGdprConsentState.NotRequired`, future analytics-capable requests regain normal device identity because GDPR gating no longer applies for that device/session.
 
 ## Consent Records
 

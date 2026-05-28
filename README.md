@@ -34,7 +34,7 @@ function CheckoutPage() {
   const { attriax, synchronizationState } = useAttriax();
 
   async function completePurchase() {
-    await attriax.recordEvent('purchase_completed', {
+    await attriax.tracking.recordEvent('purchase_completed', {
       eventData: {
         value: 99,
         currency: 'USD',
@@ -43,7 +43,7 @@ function CheckoutPage() {
   }
 
   async function createInviteLink() {
-    const result = await attriax.createDynamicLink({
+    const result = await attriax.deepLinks.createDynamicLink({
       destinationUrl: 'https://attriax.com/invite',
       group: 'react_demo',
       socialPreview: {
@@ -73,6 +73,7 @@ function CheckoutPage() {
 export function App() {
   return (
     <AttriaxProvider
+      autoInit
       config={{
         appToken: 'ax_your_app_token',
         gdprEnabled: true,
@@ -126,9 +127,10 @@ function CheckoutPage() {
 ## GDPR Consent
 
 `gdprEnabled` defaults to `false`. Turn it on only when the underlying browser
-runtime should wait for a GDPR decision before sending GDPR-gated tracking
-activity. `gdprAutoDetect` defaults to `true` and lets the SDK derive an
-initial GDPR state automatically.
+runtime should gate GDPR-regulated tracking. Anonymous-capable activity still
+sends immediately while consent is unresolved, while attribution-only work
+stays withheld until consent allows it. `gdprAutoDetect` defaults to `true`
+and lets the SDK derive an initial GDPR state automatically.
 
 ```tsx
 import { AttriaxGdprConsentState, useAttriax } from '@attriax/react';
@@ -158,12 +160,12 @@ function PrivacyButton() {
 }
 ```
 
-See [docs/gdpr-and-anonymous-analytics.md](docs/gdpr-and-anonymous-analytics.md) for the full GDPR and anonymous analytics behavior inherited from `@attriax/js`, including how pending consent defers network dispatch, how `AttriaxGdprConsentState.NotRequired` maps to the `not_required` wire value, and how denied analytics is stored without device identity.
+See [docs/gdpr-and-anonymous-analytics.md](docs/gdpr-and-anonymous-analytics.md) for the full GDPR and anonymous analytics behavior inherited from `@attriax/js`, including how unresolved consent still sends anonymous-capable traffic immediately, how `AttriaxGdprConsentState.NotRequired` maps to the `not_required` wire value, and how denied analytics is stored without device identity.
 
 ## Included APIs
 
-- `AttriaxProvider` - creates or accepts an `@attriax/js` client and runs
-  browser-side initialization automatically.
+- `AttriaxProvider` - creates or accepts an `@attriax/js` client and can run
+  browser-side initialization for you when `autoInit` is set to `true`.
 - `useAttriax()` - returns the SDK instance plus state snapshot.
 - `useAttriaxClient()` - returns only the SDK instance.
 - `useAttriaxState()` - returns the current initialization and synchronization state.
@@ -182,7 +184,7 @@ function InviteButton() {
   const { attriax } = useAttriax();
 
   async function handleClick() {
-    const result = await attriax.createDynamicLink({
+    const result = await attriax.deepLinks.createDynamicLink({
       destinationUrl: 'https://attriax.com/invite',
       group: 'creator-program',
       data: {
@@ -201,6 +203,8 @@ function InviteButton() {
 
 - No router dependency is bundled. Consumers can pass route-derived values into
   `useAttriaxPageView()` when they want manual page naming.
+- `autoInit` defaults to `false`; set it explicitly when you want the provider
+  to call `init()` inside a browser effect for the owned SDK instance.
 - Provider auto-initialization runs only in a browser effect. In SSR frameworks,
   mount `AttriaxProvider` only in client-rendered trees because the underlying
   browser SDK depends on `window`, `history`, and `localStorage`.

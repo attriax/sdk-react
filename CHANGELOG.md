@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+- Align the React wrapper release with `@attriax/js` 0.4.0.
+- Update provider docs, examples, and hooks to use the grouped browser SDK surfaces (`attriax.tracking.*`, `attriax.deepLinks.*`) and explicit `autoInit` opt-in.
+- `useAttriaxClient()` now exposes the underlying public JS instance shape directly, and provider coverage now exercises the wrapped tracking facade and React runtime metadata injection.
+
 ## 0.3.0
 
 - Align the React wrapper release with `@attriax/js` 0.3.0.

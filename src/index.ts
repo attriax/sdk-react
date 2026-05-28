@@ -195,7 +195,7 @@ export function useAttriax(): AttriaxContextValue {
 }
 
 /** Returns only the underlying Attriax browser client. */
-export function useAttriaxClient(): Attriax {
+export function useAttriaxClient(): BaseAttriax {
   return useAttriax().attriax;
 }
 
@@ -252,7 +252,7 @@ export function useAttriaxPageView(
       return;
     }
 
-    void attriax.recordPageView(pageName, {
+    void attriax.tracking.recordPageView(pageName, {
       ...optionsRef.current,
       source: optionsRef.current.source ?? 'react_hook',
     });
@@ -270,7 +270,7 @@ export function useAttriaxPageView(
   ]);
 }
 
-function createSnapshot(attriax: Attriax): AttriaxStateSnapshot {
+function createSnapshot(attriax: BaseAttriax): AttriaxStateSnapshot {
   return {
     isInitialized: attriax.isInitialized,
     isFirstLaunch: attriax.isFirstLaunch,

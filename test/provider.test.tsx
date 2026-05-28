@@ -7,6 +7,7 @@ import {
   AttriaxGdprConsentState,
   AttriaxProvider,
   useAttriax,
+  useAttriaxClient,
   useAttriaxPageView,
 } from '../src';
 import { AttriaxSynchronizationState } from '@attriax/js';
@@ -25,7 +26,7 @@ describe('@attriax/react', () => {
       },
     });
 
-    expect((attriax as any).configValue.sdkMetadata).toMatchObject({
+    expect((attriax as any).client.configValue.sdkMetadata).toMatchObject({
       clientRuntime: 'react',
       retained: 'yes',
     });
@@ -51,7 +52,9 @@ describe('@attriax/react', () => {
           subscribe: () => () => undefined,
         },
       },
-      recordPageView,
+      tracking: {
+        recordPageView,
+      },
     } as any;
 
     function TestComponent() {
@@ -82,6 +85,45 @@ describe('@attriax/react', () => {
     );
   });
 
+  it('returns the provided public JS instance from useAttriaxClient', async () => {
+    const instance = {
+      isInitialized: true,
+      isFirstLaunch: false,
+      synchronization: {
+        state: AttriaxSynchronizationState.Synchronized,
+        isSynchronized: true,
+        subscribe: () => () => undefined,
+      },
+      deepLinks: {
+        stream: {
+          subscribe: () => () => undefined,
+        },
+      },
+      tracking: {
+        recordPageView: vi.fn().mockResolvedValue(undefined),
+      },
+    } as any;
+
+    function TestComponent() {
+      const attriax = useAttriaxClient();
+      return <div data-client={attriax === instance ? 'same' : 'different'} />;
+    }
+
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+
+    await act(async () => {
+      root.render(
+        <AttriaxProvider instance={instance} autoInit={false}>
+          <TestComponent />
+        </AttriaxProvider>,
+      );
+    });
+
+    expect(container.querySelector('[data-client="same"]')).not.toBeNull();
+  });
+
   it('retracks a page view when tracked options change', async () => {
     const recordPageView = vi.fn().mockResolvedValue(undefined);
 
@@ -98,7 +140,9 @@ describe('@attriax/react', () => {
           subscribe: () => () => undefined,
         },
       },
-      recordPageView,
+      tracking: {
+        recordPageView,
+      },
     } as any;
 
     function TestComponent({ previousPageName }: { previousPageName?: string }) {
