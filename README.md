@@ -17,7 +17,7 @@ Attriax website: https://attriax.com
 - React 18 or 19.
 - `@attriax/js` available alongside this package.
 - A browser-rendered application tree for `AttriaxProvider` initialization.
-- An active Attriax app token.
+- An active Attriax project token.
 
 ## Installation
 
@@ -75,7 +75,7 @@ export function App() {
     <AttriaxProvider
       autoInit
       config={{
-        appToken: 'ax_your_app_token',
+        projectToken: 'ax_your_project_token',
         gdprEnabled: true,
         gdprAutoDetect: true,
       }}
@@ -98,7 +98,7 @@ events:
 ```tsx
 <AttriaxProvider
   config={{
-    appToken: 'ax_your_app_token',
+    projectToken: 'ax_your_project_token',
     automaticPageTracking: false,
   }}
 >
