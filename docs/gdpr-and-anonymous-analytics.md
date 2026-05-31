@@ -13,7 +13,8 @@ GDPR consent has these states:
 - `granted`: a user decision has been recorded, including category values.
 - `not_required` (`AttriaxGdprConsentState.NotRequired`): GDPR consent is not required for this app session or install.
 
-Use `state`, `values`, and `isWaitingForConsent` to drive privacy UI. Use `needsConsent({ localOnly: true })` for a local timezone-based precheck, and `needsConsent()` when the app can call the API for the server-side region decision.
+Use `state`, `values`, and `isWaitingForConsent` to drive privacy UI. Use `needsConsent({ localOnly: true })` for an explicit local precheck, and `needsConsent()` when the app can call the API for the server-side region decision.
+The SDK does not run GDPR region checks automatically during `init()`.
 
 ## Pending Consent
 

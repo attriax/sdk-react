@@ -77,7 +77,6 @@ export function App() {
       config={{
         projectToken: 'ax_your_project_token',
         gdprEnabled: true,
-        gdprAutoDetect: true,
       }}
     >
       <CheckoutPage />
@@ -129,8 +128,7 @@ function CheckoutPage() {
 `gdprEnabled` defaults to `false`. Turn it on only when the underlying browser
 runtime should gate GDPR-regulated tracking. Anonymous-capable activity still
 sends immediately while consent is unresolved, while attribution-only work
-stays withheld until consent allows it. `gdprAutoDetect` defaults to `true`
-and lets the SDK derive an initial GDPR state automatically.
+stays withheld until consent allows it.
 
 ```tsx
 import { AttriaxGdprConsentState, useAttriax } from '@attriax/react';

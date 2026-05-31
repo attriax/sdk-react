@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1
+
+- Align the React wrapper release with `@attriax/js` 0.4.1.
+- Remove the deprecated GDPR auto-detection toggle from provider documentation and examples because the underlying browser runtime no longer exposes it.
+
 ## 0.4.0
 
 - Align the React wrapper release with `@attriax/js` 0.4.0.
