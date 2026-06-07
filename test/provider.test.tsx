@@ -1,6 +1,6 @@
-import { act } from 'react';
-import { createRoot } from 'react-dom/client';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act } from "react";
+import { createRoot } from "react-dom/client";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   Attriax,
@@ -9,34 +9,34 @@ import {
   useAttriax,
   useAttriaxClient,
   useAttriaxPageView,
-} from '../src';
-import { AttriaxSynchronizationState } from '@attriax/js';
+} from "../src";
+import { AttriaxSynchronizationState } from "@attriax/js";
 
 afterEach(() => {
-  document.body.innerHTML = '';
+  document.body.innerHTML = "";
 });
 
-describe('@attriax/react', () => {
-  it('overrides custom sdk metadata with the React client runtime marker', () => {
+describe("@attriax/react", () => {
+  it("overrides custom sdk metadata with the React client runtime marker", () => {
     const attriax = new Attriax({
-      appToken: 'ax_test_token',
+      projectToken: "ax_test_token",
       sdkMetadata: {
-        clientRuntime: 'custom',
-        retained: 'yes',
+        clientRuntime: "custom",
+        retained: "yes",
       },
     });
 
     expect((attriax as any).client.configValue.sdkMetadata).toMatchObject({
-      clientRuntime: 'react',
-      retained: 'yes',
+      clientRuntime: "react",
+      retained: "yes",
     });
   });
 
-  it('re-exports GDPR consent state values from the browser SDK', () => {
-    expect(AttriaxGdprConsentState.NotRequired).toBe('not_required');
+  it("re-exports GDPR consent state values from the browser SDK", () => {
+    expect(AttriaxGdprConsentState.NotRequired).toBe("not_required");
   });
 
-  it('provides the client instance and tracks page views from the hook', async () => {
+  it("provides the client instance and tracks page views from the hook", async () => {
     const recordPageView = vi.fn().mockResolvedValue(undefined);
 
     const instance = {
@@ -59,14 +59,14 @@ describe('@attriax/react', () => {
 
     function TestComponent() {
       const { attriax } = useAttriax();
-      useAttriaxPageView('/pricing', {
-        effectKey: '/pricing',
+      useAttriaxPageView("/pricing", {
+        effectKey: "/pricing",
       });
 
-      return <div data-client={attriax === instance ? 'same' : 'different'} />;
+      return <div data-client={attriax === instance ? "same" : "different"} />;
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     document.body.appendChild(container);
     const root = createRoot(container);
 
@@ -80,12 +80,12 @@ describe('@attriax/react', () => {
 
     expect(container.querySelector('[data-client="same"]')).not.toBeNull();
     expect(recordPageView).toHaveBeenCalledWith(
-      '/pricing',
-      expect.objectContaining({ source: 'react_hook' }),
+      "/pricing",
+      expect.objectContaining({ source: "react_hook" }),
     );
   });
 
-  it('returns the provided public JS instance from useAttriaxClient', async () => {
+  it("returns the provided public JS instance from useAttriaxClient", async () => {
     const instance = {
       isInitialized: true,
       isFirstLaunch: false,
@@ -106,10 +106,10 @@ describe('@attriax/react', () => {
 
     function TestComponent() {
       const attriax = useAttriaxClient();
-      return <div data-client={attriax === instance ? 'same' : 'different'} />;
+      return <div data-client={attriax === instance ? "same" : "different"} />;
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     document.body.appendChild(container);
     const root = createRoot(container);
 
@@ -124,7 +124,7 @@ describe('@attriax/react', () => {
     expect(container.querySelector('[data-client="same"]')).not.toBeNull();
   });
 
-  it('retracks a page view when tracked options change', async () => {
+  it("retracks a page view when tracked options change", async () => {
     const recordPageView = vi.fn().mockResolvedValue(undefined);
 
     const instance = {
@@ -145,16 +145,20 @@ describe('@attriax/react', () => {
       },
     } as any;
 
-    function TestComponent({ previousPageName }: { previousPageName?: string }) {
-      useAttriaxPageView('/pricing', {
-        effectKey: 'pricing',
+    function TestComponent({
+      previousPageName,
+    }: {
+      previousPageName?: string;
+    }) {
+      useAttriaxPageView("/pricing", {
+        effectKey: "pricing",
         previousPageName,
       });
 
       return null;
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     document.body.appendChild(container);
     const root = createRoot(container);
 
@@ -176,13 +180,19 @@ describe('@attriax/react', () => {
 
     expect(recordPageView).toHaveBeenNthCalledWith(
       1,
-      '/pricing',
-      expect.objectContaining({ previousPageName: '/landing', source: 'react_hook' }),
+      "/pricing",
+      expect.objectContaining({
+        previousPageName: "/landing",
+        source: "react_hook",
+      }),
     );
     expect(recordPageView).toHaveBeenNthCalledWith(
       2,
-      '/pricing',
-      expect.objectContaining({ previousPageName: '/checkout', source: 'react_hook' }),
+      "/pricing",
+      expect.objectContaining({
+        previousPageName: "/checkout",
+        source: "react_hook",
+      }),
     );
   });
 });

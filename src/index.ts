@@ -1,7 +1,7 @@
 import {
   Attriax as BaseAttriax,
   AttriaxSynchronizationState,
-} from '@attriax/js';
+} from "@attriax/js";
 import type {
   AttriaxAdEventType,
   AttriaxConfig,
@@ -15,7 +15,7 @@ import type {
   AttriaxRecordAdEventOptions,
   AttriaxRecordAdRevenueOptions,
   AttriaxRecordPurchaseOptions,
-} from '@attriax/js';
+} from "@attriax/js";
 import {
   createElement,
   createContext,
@@ -24,7 +24,7 @@ import {
   useEffect,
   useRef,
   useState,
-} from 'react';
+} from "react";
 
 export {
   AttriaxApiError,
@@ -32,7 +32,7 @@ export {
   AttriaxGdprConsent,
   AttriaxGdprConsentState,
   AttriaxSynchronizationState,
-} from '@attriax/js';
+} from "@attriax/js";
 export type {
   AttriaxAdEventType,
   AttriaxConfig,
@@ -46,7 +46,7 @@ export type {
   AttriaxRecordAdEventOptions,
   AttriaxRecordAdRevenueOptions,
   AttriaxRecordPurchaseOptions,
-} from '@attriax/js';
+} from "@attriax/js";
 
 export class Attriax extends BaseAttriax {
   constructor(config: AttriaxConfig) {
@@ -109,14 +109,20 @@ export function AttriaxProvider({
   const ownsInstanceRef = useRef(false);
 
   if (instance) {
-    if (ownsInstanceRef.current && attriaxRef.current && attriaxRef.current !== instance) {
+    if (
+      ownsInstanceRef.current &&
+      attriaxRef.current &&
+      attriaxRef.current !== instance
+    ) {
       attriaxRef.current.dispose();
     }
     attriaxRef.current = instance;
     ownsInstanceRef.current = false;
   } else if (!attriaxRef.current || !ownsInstanceRef.current) {
     if (!config) {
-      throw new Error('AttriaxProvider requires either a config or an Attriax instance.');
+      throw new Error(
+        "AttriaxProvider requires either a config or an Attriax instance.",
+      );
     }
     attriaxRef.current = new Attriax(config);
     ownsInstanceRef.current = true;
@@ -164,7 +170,10 @@ export function AttriaxProvider({
             try {
               onInitError(error);
             } catch (callbackError) {
-              console.error('[Attriax React] onInitError callback threw.', callbackError);
+              console.error(
+                "[Attriax React] onInitError callback threw.",
+                callbackError,
+              );
             }
           }
         }
@@ -189,7 +198,7 @@ export function AttriaxProvider({
 export function useAttriax(): AttriaxContextValue {
   const value = useContext(AttriaxContext);
   if (!value) {
-    throw new Error('useAttriax must be used within an AttriaxProvider.');
+    throw new Error("useAttriax must be used within an AttriaxProvider.");
   }
   return value;
 }
@@ -204,7 +213,7 @@ function withReactSdkMetadata(config: AttriaxConfig): AttriaxConfig {
     ...config,
     sdkMetadata: {
       ...(config.sdkMetadata ?? {}),
-      clientRuntime: 'react',
+      clientRuntime: "react",
     },
   };
 }
@@ -254,7 +263,7 @@ export function useAttriaxPageView(
 
     void attriax.tracking.recordPageView(pageName, {
       ...optionsRef.current,
-      source: optionsRef.current.source ?? 'react_hook',
+      source: optionsRef.current.source ?? "react_hook",
     });
   }, [
     attriax,
