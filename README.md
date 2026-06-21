@@ -123,6 +123,82 @@ function CheckoutPage() {
 }
 ```
 
+## Push Notification Attribution
+
+`useAttriaxRecordNotification()` returns a stable callback that mirrors the
+underlying `@attriax/js` `tracking.recordNotification(type, notificationId,
+options?)` surface. Attriax never sends pushes itself — you call this from your
+own push handler (a service-worker `push` / `notificationclick` listener, or a
+hybrid native bridge), forwarding any Attriax `linkId` / `campaignId` reference
+embedded in the payload. The call routes through the same offline queue and
+consent gates as other tracking.
+
+The three lifecycle types are `"received"` (deliverability), `"opened"`
+(re-engagement attribution), and `"dismissed"` (best-effort — the web
+Notification API's `onclose` is unreliable across browsers/OS). `source`
+(`"fcm"` | `"apns"` | `"other"`) is inferred from `payload` when omitted.
+
+```tsx
+import { useEffect } from 'react';
+import { useAttriaxRecordNotification } from '@attriax/react';
+
+function PushAttributionBridge() {
+  const recordNotification = useAttriaxRecordNotification();
+
+  useEffect(() => {
+    const channel = navigator.serviceWorker;
+    if (!channel) {
+      return;
+    }
+
+    // The service worker posts the click/push payload to the page, where the
+    // hook has access to the live Attriax client.
+    function handleMessage(event: MessageEvent) {
+      const message = event.data;
+      if (!message || message.type !== 'attriax-notification') {
+        return;
+      }
+
+      void recordNotification(message.lifecycle, message.notificationId, {
+        linkId: message.payload?.attriax_link_id,
+        campaignId: message.payload?.attriax_campaign_id,
+        title: message.payload?.title,
+        // `source` omitted — inferred from the forwarded FCM/APNs payload.
+        payload: message.payload,
+        flushImmediately: true,
+      });
+    }
+
+    channel.addEventListener('message', handleMessage);
+    return () => channel.removeEventListener('message', handleMessage);
+  }, [recordNotification]);
+
+  return null;
+}
+```
+
+```tsx
+// service-worker.ts — forward the click to the page for the React hook to record.
+self.addEventListener('notificationclick', (event) => {
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window' }).then((clients) => {
+      for (const client of clients) {
+        client.postMessage({
+          type: 'attriax-notification',
+          lifecycle: 'opened',
+          notificationId: event.notification.data?.notificationId,
+          payload: event.notification.data,
+        });
+      }
+    }),
+  );
+});
+```
+
+When you record directly from the service worker instead (no page available),
+call the `@attriax/js` `tracking` surface there — see the `@attriax/js` README
+"Push Notification Attribution" section for the worker-side snippets.
+
 ## GDPR Consent
 
 `gdprEnabled` defaults to `false`. Turn it on only when the underlying browser
@@ -168,6 +244,8 @@ See [docs/gdpr-and-anonymous-analytics.md](docs/gdpr-and-anonymous-analytics.md)
 - `useAttriaxClient()` - returns only the SDK instance.
 - `useAttriaxState()` - returns the current initialization and synchronization state.
 - `useAttriaxDeepLinks()` - subscribes to deep-link events.
+- `useAttriaxRecordNotification()` - returns a stable callback for recording
+  push-notification attribution events forwarded from your own push handler.
 - `useAttriaxPageView()` - emits standardized page-view events from React effects.
 
 ## Dynamic Link Creation

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- Align the React wrapper release with `@attriax/js` 0.5.0.
+- Inherit best-effort app-open handling: app-open is now fire-and-forget and no longer blocks event, session, or deep-link delivery.
+- Inherit capped, jittered exponential retry backoff that honors a server `Retry-After` header for failed requests.
+- Pick up the new deep-link referrer methods and analytics-event keys, serialized consent reconciliation, and the clamped session-continuation window from the browser runtime.
+
 ## 0.4.1
 
 - Align the React wrapper release with `@attriax/js` 0.4.1.

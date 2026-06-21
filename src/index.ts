@@ -11,15 +11,19 @@ import type {
   AttriaxDynamicLinkRecord,
   AttriaxGdprConsentValues,
   AttriaxInitOptions,
+  AttriaxNotificationEventType,
+  AttriaxNotificationEventSource,
   AttriaxPageViewOptions,
   AttriaxRecordAdEventOptions,
   AttriaxRecordAdRevenueOptions,
+  AttriaxRecordNotificationOptions,
   AttriaxRecordPurchaseOptions,
 } from "@attriax/js";
 import {
   createElement,
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -42,9 +46,12 @@ export type {
   AttriaxDynamicLinkRecord,
   AttriaxGdprConsentValues,
   AttriaxInitOptions,
+  AttriaxNotificationEventType,
+  AttriaxNotificationEventSource,
   AttriaxPageViewOptions,
   AttriaxRecordAdEventOptions,
   AttriaxRecordAdRevenueOptions,
+  AttriaxRecordNotificationOptions,
   AttriaxRecordPurchaseOptions,
 } from "@attriax/js";
 
@@ -242,6 +249,31 @@ export function useAttriaxDeepLinks(
       listenerRef.current(event);
     });
   }, [attriax]);
+}
+
+/**
+ * Returns a stable callback for recording push-notification attribution events.
+ *
+ * Attriax never sends pushes itself: call the returned function from your own
+ * FCM/APNs handler (e.g. a service worker `push` listener), threading through
+ * any Attriax `linkId`/`campaignId` reference embedded in the notification
+ * payload. The call routes through the same offline queue and consent gates as
+ * other tracking, mirroring the underlying `@attriax/js` `tracking` surface.
+ */
+export function useAttriaxRecordNotification(): (
+  type: AttriaxNotificationEventType,
+  notificationId: string,
+  options?: AttriaxRecordNotificationOptions,
+) => Promise<void> {
+  const { attriax } = useAttriax();
+  return useCallback(
+    (
+      type: AttriaxNotificationEventType,
+      notificationId: string,
+      options?: AttriaxRecordNotificationOptions,
+    ) => attriax.tracking.recordNotification(type, notificationId, options),
+    [attriax],
+  );
 }
 
 /**
