@@ -124,7 +124,7 @@ describe("@attriax/react", () => {
     expect(container.querySelector('[data-client="same"]')).not.toBeNull();
   });
 
-  it("retracks a page view when tracked options change", async () => {
+  it("retracks a page view with fresh option values when the effect key changes", async () => {
     const recordPageView = vi.fn().mockResolvedValue(undefined);
 
     const instance = {
@@ -146,12 +146,14 @@ describe("@attriax/react", () => {
     } as any;
 
     function TestComponent({
+      effectKey,
       previousPageName,
     }: {
+      effectKey: string;
       previousPageName?: string;
     }) {
       useAttriaxPageView("/pricing", {
-        effectKey: "pricing",
+        effectKey,
         previousPageName,
       });
 
@@ -165,7 +167,7 @@ describe("@attriax/react", () => {
     await act(async () => {
       root.render(
         <AttriaxProvider instance={instance} autoInit={false}>
-          <TestComponent previousPageName="/landing" />
+          <TestComponent effectKey="visit-1" previousPageName="/landing" />
         </AttriaxProvider>,
       );
     });
@@ -173,7 +175,7 @@ describe("@attriax/react", () => {
     await act(async () => {
       root.render(
         <AttriaxProvider instance={instance} autoInit={false}>
-          <TestComponent previousPageName="/checkout" />
+          <TestComponent effectKey="visit-2" previousPageName="/checkout" />
         </AttriaxProvider>,
       );
     });
@@ -191,6 +193,66 @@ describe("@attriax/react", () => {
       "/pricing",
       expect.objectContaining({
         previousPageName: "/checkout",
+        source: "react_hook",
+      }),
+    );
+  });
+
+  it("does not retrack when an inline parameters object changes identity between renders", async () => {
+    const recordPageView = vi.fn().mockResolvedValue(undefined);
+
+    const instance = {
+      isInitialized: true,
+      isFirstLaunch: false,
+      synchronization: {
+        state: AttriaxSynchronizationState.Synchronized,
+        isSynchronized: true,
+        subscribe: () => () => undefined,
+      },
+      deepLinks: {
+        stream: {
+          subscribe: () => () => undefined,
+        },
+      },
+      tracking: {
+        recordPageView,
+      },
+    } as any;
+
+    function TestComponent({ renderPass }: { renderPass: number }) {
+      // A fresh object literal on every render must not re-fire the effect.
+      useAttriaxPageView("/pricing", {
+        parameters: { plan: "startup" },
+      });
+
+      return <span data-render-pass={renderPass} />;
+    }
+
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+
+    await act(async () => {
+      root.render(
+        <AttriaxProvider instance={instance} autoInit={false}>
+          <TestComponent renderPass={1} />
+        </AttriaxProvider>,
+      );
+    });
+
+    await act(async () => {
+      root.render(
+        <AttriaxProvider instance={instance} autoInit={false}>
+          <TestComponent renderPass={2} />
+        </AttriaxProvider>,
+      );
+    });
+
+    expect(recordPageView).toHaveBeenCalledTimes(1);
+    expect(recordPageView).toHaveBeenCalledWith(
+      "/pricing",
+      expect.objectContaining({
+        parameters: { plan: "startup" },
         source: "react_hook",
       }),
     );

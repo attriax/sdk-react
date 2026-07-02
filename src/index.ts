@@ -279,6 +279,12 @@ export function useAttriaxRecordNotification(): (
 /**
  * Tracks a manual page view from a React effect. Disable this hook when the
  * underlying web client already uses automatic page tracking.
+ *
+ * The effect re-fires only when `pageName`, `effectKey`, or `disabled`
+ * changes; the remaining options are read fresh at fire time. This keeps
+ * inline option objects (e.g. a literal `parameters` object recreated on
+ * every render) from re-tracking the same page on each render. Pass a
+ * changing `effectKey` when the same page name should be re-tracked.
  */
 export function useAttriaxPageView(
   pageName: string,
@@ -289,7 +295,7 @@ export function useAttriaxPageView(
   optionsRef.current = options;
 
   useEffect(() => {
-    if (!isInitialized || options.disabled) {
+    if (!isInitialized || optionsRef.current.disabled) {
       return;
     }
 
@@ -297,18 +303,7 @@ export function useAttriaxPageView(
       ...optionsRef.current,
       source: optionsRef.current.source ?? "react_hook",
     });
-  }, [
-    attriax,
-    isInitialized,
-    pageName,
-    options.disabled,
-    options.effectKey,
-    options.pageClass,
-    options.pageTitle,
-    options.previousPageName,
-    options.parameters,
-    options.source,
-  ]);
+  }, [attriax, isInitialized, pageName, options.disabled, options.effectKey]);
 }
 
 function createSnapshot(attriax: BaseAttriax): AttriaxStateSnapshot {
