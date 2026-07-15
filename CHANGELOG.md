@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- Align the React wrapper release with `@attriax/js` 0.6.0.
+- Inherit the new `consent.ccpa` surface (`doNotSell` / `usPrivacy`) from the browser runtime.
+- Inherit the public `flush()`, the batch body-size cap raised from 48 KiB to 256 KiB, and the session rotation that now triggers when the configured app identity (`appVersion`, `appBuildNumber`, `appPackageName`) changes.
+- Fix: `useAttriaxPageView` no longer re-fires on every render when callers pass an inline options object. The effect now re-fires only on `pageName` / `effectKey` / `disabled` changes and reads the remaining option values fresh at fire time, so inline `parameters` no longer inflate page and event counts.
+
 ## 0.5.0
 
 - Align the React wrapper release with `@attriax/js` 0.5.0.
